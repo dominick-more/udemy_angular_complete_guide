@@ -1,3 +1,6 @@
+<ng-template #noServerCreated>
+    <p>No server was created!</p>
+</ng-template>
 <label>Server Name</label>
 <input
     type="text"
@@ -12,6 +15,6 @@
 >
     Add Server
 </button>
-<p [innerText]="serverCreationStatus"></p>
+<p *ngIf="serverCreated; else noServerCreated">Server {{serverName}} was created.</p>
 <app-server></app-server>
 <app-server></app-server>
