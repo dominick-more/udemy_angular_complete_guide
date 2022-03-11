@@ -1,0 +1,10 @@
+span {
+    background-color: whitesmoke;
+    color: darkblue;
+    display: inline-block;
+    line-height: 2em;
+    width: 100%;
+    padding: 0 0.5em;
+    text-align: left;
+    vertical-align: middle;
+}

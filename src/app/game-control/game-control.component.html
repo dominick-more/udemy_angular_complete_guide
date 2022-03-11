@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-xs-12">
+        <button
+            class="btn btn-primary"
+            (click)="onStartGame()"
+            [disabled]="isGameRunning()">
+            Start Game
+        </button>
+        <button
+            class="btn btn-primary"
+            (click)="onStopGame()"
+            [disabled]="!isGameRunning()">
+            Stop Game
+        </button>
+    </div>
+</div>

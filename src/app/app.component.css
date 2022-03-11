@@ -1,0 +1,7 @@
+.seconds-list {
+    background-color:beige;
+    height: 20em;
+    margin: 12px 0 0;
+    width: 100%;
+    overflow-y: auto;
+}
