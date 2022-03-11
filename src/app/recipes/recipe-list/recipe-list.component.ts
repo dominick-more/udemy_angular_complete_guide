@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import Recipe from 'src/app/types/recipe.model';
 
 @Component({
@@ -7,6 +7,7 @@ import Recipe from 'src/app/types/recipe.model';
   styleUrls: ['./recipe-list.component.css']
 })
 export class RecipeListComponent implements OnInit {
+  @Output() readonly recipeSelected = new EventEmitter<Recipe | undefined>();
 
   readonly recipes: Readonly<Recipe>[] = [
     {
@@ -21,4 +22,9 @@ export class RecipeListComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onRecipeSelected(recipe?: Recipe) {
+    if (recipe !== undefined) {
+      this.recipeSelected.emit(recipe);
+    }
+  }
 }

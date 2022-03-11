@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import AppTarget from './types/app-target';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'udemy-angular-01';
+  readonly title = 'udemy-angular-01';
+  appTarget: AppTarget = 'recipes';
+
+  onSelectAppTarget(appTarget: AppTarget) {
+    this.appTarget = appTarget;
+  }
 }
