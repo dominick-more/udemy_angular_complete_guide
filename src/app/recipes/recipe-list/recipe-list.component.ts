@@ -1,5 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Recipe from 'src/app/types/recipe.model';
+import RecipeService from '../recipe.service';
 
 @Component({
   selector: 'app-recipe-list',
@@ -7,24 +8,11 @@ import Recipe from 'src/app/types/recipe.model';
   styleUrls: ['./recipe-list.component.css']
 })
 export class RecipeListComponent implements OnInit {
-  @Output() readonly recipeSelected = new EventEmitter<Recipe | undefined>();
-
-  readonly recipes: Readonly<Recipe>[] = [
-    {
-      name: 'A Test Recipe',
-      description: 'This is simply a test',
-      imagePath: 'https://image.brigitte.de/10394730/t/eI/v25/w1440/r1/-/spinatquiche.jpg'
-    }
-  ];
-
-  constructor() { }
+  public recipes: Readonly<Recipe>[] = [];
+  
+  constructor(private readonly recipeService: RecipeService) { }
 
   ngOnInit(): void {
-  }
-
-  onRecipeSelected(recipe?: Recipe) {
-    if (recipe !== undefined) {
-      this.recipeSelected.emit(recipe);
-    }
+    this.recipes = this.recipeService.getRecipes();
   }
 }
