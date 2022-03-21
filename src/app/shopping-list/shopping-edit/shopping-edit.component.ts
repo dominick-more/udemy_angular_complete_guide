@@ -18,9 +18,13 @@ export class ShoppingEditComponent implements OnInit, CanDeactivateCheck {
   ngOnInit(): void {}
   
   canDeactivate(): boolean {
-    return (isNotBlank(this.name) && this.amount > 0);
+    return this.isValid();
   }
   
+  isValid(): boolean {
+    return (isNotBlank(this.name) && this.amount > 0);
+  }
+
   onAddItem(): void {
     this.ingredientsService.addIngredient({name: this.name, amount: this.amount});
   }

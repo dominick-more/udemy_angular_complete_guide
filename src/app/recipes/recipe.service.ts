@@ -1,34 +1,37 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as generateId } from 'uuid';
+import { isNil, isNotBlank } from '../shared/app.utilities';
 import ShoppingListService from '../shopping-list/shopping-list.service';
 import Ingredient from '../types/ingredient.model';
 import Recipe from '../types/recipe.model';
 
+/**
+ * Provides the recipe list store and CRUD access.
+ */
 @Injectable()
 export default class RecipeService {
     private readonly recipes: Readonly<Recipe>[] = [
         {
-            id: uuidv4(),
+            id: generateId(),
             name: 'Tasty Schnitzel',
             description: 'A super-tasty Schnitzel - just awesome?',
             imagePath: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Schnitzel.JPG/640px-Schnitzel.JPG',
             ingredients: [
-                {id: uuidv4(), name: 'Meat', amount: 1},
-                {id: uuidv4(), name: 'French Fried', amount: 20}
+                {id: generateId(), name: 'Meat', amount: 1},
+                {id: generateId(), name: 'French Fried', amount: 20}
             ]
         },
         {
-            id: uuidv4(),
+            id: generateId(),
             name: 'Big Fat Burger',
             description: 'What else you need to say?',
             imagePath: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg/640px-Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg',
             ingredients: [
-                {id: uuidv4(), name: 'Meat', amount: 1},
-                {id: uuidv4(), name: 'Buns', amount: 2}
+                {id: generateId(), name: 'Meat', amount: 1},
+                {id: generateId(), name: 'Buns', amount: 2}
             ]
         }
     ];
-    readonly recipeSelectedEmitter = new EventEmitter<string| undefined>();
     readonly recipesUpdatedEmitter = new EventEmitter<Readonly<Recipe>[]>();
 
     constructor(private readonly shoppingListService: ShoppingListService) { }
@@ -37,9 +40,11 @@ export default class RecipeService {
         this.shoppingListService.addIngredients(items);
     }
 
-    addRecipe(data: Omit<Readonly<Recipe>, 'id'>) {
-        this.recipes.push({...data, id: uuidv4()});
+    addRecipe(data: Omit<Readonly<Recipe>, 'id'>): Readonly<Recipe> {
+        const added = {...data, id: generateId()};
+        this.recipes.push(added);
         this.recipesUpdatedEmitter.emit(this.getRecipes());
+        return added;
     }
 
     deleteRecipe(id?: string):  Readonly<Recipe> | undefined {
@@ -61,15 +66,18 @@ export default class RecipeService {
         return [...this.recipes];
     }
 
-    selectRecipe(id?: string): void {
-        this.recipeSelectedEmitter.emit(id);
+    isValidRecipe(recipe?: Omit<Readonly<Recipe>, 'id'>): boolean {
+      return !isNil(recipe) && (isNotBlank(recipe.name) && isNotBlank(recipe.description) && isNotBlank(recipe.imagePath));
     }
 
-    updateRecipe(data: Readonly<Recipe>) {
+    updateRecipe(data: Readonly<Recipe>): Readonly<Recipe> | undefined {
         const index = this.recipes.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
         if (index !== -1) {
-            this.recipes[index] = {...data};
+            const updated = {...data};
+            this.recipes[index] = updated;
             this.recipesUpdatedEmitter.emit(this.getRecipes());
+            return updated;
         }
+        return undefined;
     }
 }

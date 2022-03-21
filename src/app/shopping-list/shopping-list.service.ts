@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as generateId } from 'uuid';
 import Ingredient from '../types/ingredient.model';
 
 @Injectable()
@@ -9,19 +9,19 @@ export default class ShoppingListService {
 
   private readonly ingredients: Readonly<Ingredient>[] = [
       {
-        id: uuidv4(),
+        id: generateId(),
         name: 'Apples',
         amount: 5
       },
       {
-        id: uuidv4(),
+        id: generateId(),
         name: 'Tomatoes',
         amount: 10
       }
   ];
 
   addIngredient(item: Readonly<Omit<Ingredient, 'id'>>) {
-    this.ingredients.push({...item, id: uuidv4()});
+    this.ingredients.push({...item, id: generateId()});
     this.ingredientsChangedEmitter.emit(this.getIngredients());
   }
 
@@ -29,7 +29,7 @@ export default class ShoppingListService {
     if (!items.length) {
       return;
     }
-    this.ingredients.push(...items.map((item) => ({...item, id: uuidv4()})));
+    this.ingredients.push(...items.map((item) => ({...item, id: generateId()})));
     this.ingredientsChangedEmitter.emit(this.getIngredients());
   }
 

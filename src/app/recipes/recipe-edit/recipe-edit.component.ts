@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { isNotBlank, isTypeWithId } from '../../shared/app.utilities';
+import { isTypeWithId } from '../../shared/app.utilities';
 import CanDeactivateCheck from '../../types/can-deactivate-check';
 import { WithOptional } from '../../types/type-script';
 import Recipe from '../../types/recipe.model';
@@ -34,6 +34,10 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
     private readonly route: ActivatedRoute,
     private readonly router: Router) { }
 
+  /**
+   * Subscribes to RecipeResolver recipes 'updated' event.
+   * @see {@link RecipeResolver} for data source.
+   */
   ngOnInit(): void {
     this.routeDataSubscription = this.route.data.subscribe((data: Data) => {
       this.recipe = createEditableRecipe(data[RecipeDataKey]);
@@ -53,7 +57,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
   }
 
   isValid(): boolean {
-    return (isNotBlank(this.recipe.name) && isNotBlank(this.recipe.description) && isNotBlank(this.recipe.imagePath));
+    return this.recipeService.isValidRecipe(this.recipe);
   }
 
   onCancel(): void {

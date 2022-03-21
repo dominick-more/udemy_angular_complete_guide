@@ -1,29 +1,13 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import Recipe from '../types/recipe.model';
-import RecipeService from './recipe.service';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-recipes',
   templateUrl: './recipes.component.html',
   styleUrls: ['./recipes.component.css']
 })
-export class RecipesComponent implements OnInit, OnDestroy {
+export class RecipesComponent implements OnInit {
 
-  private recipeSelectedSubscription: Subscription | undefined; 
-  public selectedRecipe: Recipe | undefined;
-
-  constructor(private readonly recipeService: RecipeService) { }
+  constructor() { }
   
-  ngOnInit(): void {
-    this.recipeSelectedSubscription = this.recipeService.
-      recipeSelectedEmitter.subscribe(
-      (id?: string) => {
-        this.selectedRecipe = this.recipeService.findRecipeById(id);
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.recipeSelectedSubscription?.unsubscribe();
-  }
+  ngOnInit(): void {}
 }
