@@ -1,9 +1,10 @@
-<app-header (appTargetClicked)="onSelectAppTarget($event)"></app-header>
+<app-header></app-header>
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <app-recipes *ngIf="appTarget === 'recipes'"></app-recipes>
-      <app-shopping-list *ngIf="appTarget === 'shopping-list'"></app-shopping-list>
+      <router-outlet></router-outlet>
+      <!-- <app-recipes *ngIf="appTarget === 'recipes'"></app-recipes>
+      <app-shopping-list *ngIf="appTarget === 'shopping-list'"></app-shopping-list> -->
     </div>
   </div>
 </div>

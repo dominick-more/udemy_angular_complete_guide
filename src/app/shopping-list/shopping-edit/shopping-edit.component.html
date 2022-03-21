@@ -29,7 +29,7 @@
                     <button
                         class="btn btn-success"
                         type="submit"
-                        [disabled]="isBlank(name) || !amount"
+                        [disabled]="canDeactivate()"
                         (click)="onAddItem()">
                         Add
                     </button>

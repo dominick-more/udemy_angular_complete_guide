@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { isNotBlank } from 'src/app/shared/app.utilities';
+import CanDeactivateCheck from 'src/app/types/can-deactivate-check';
 import ShoppingListService from '../shopping-list.service';
 
 @Component({
@@ -6,7 +8,7 @@ import ShoppingListService from '../shopping-list.service';
   templateUrl: './shopping-edit.component.html',
   styleUrls: ['./shopping-edit.component.css']
 })
-export class ShoppingEditComponent implements OnInit {
+export class ShoppingEditComponent implements OnInit, CanDeactivateCheck {
 
   amount: number = 1;
   name: string = '';
@@ -14,6 +16,10 @@ export class ShoppingEditComponent implements OnInit {
   constructor(private readonly ingredientsService: ShoppingListService) { }
   
   ngOnInit(): void {}
+  
+  canDeactivate(): boolean {
+    return (isNotBlank(this.name) && this.amount > 0);
+  }
   
   onAddItem(): void {
     this.ingredientsService.addIngredient({name: this.name, amount: this.amount});
@@ -24,9 +30,5 @@ export class ShoppingEditComponent implements OnInit {
       return NaN;
     }
     return Number(value.trim());
-  }
-
-  isBlank(value?: string): boolean {
-    return (value === undefined) || /^\s*$/.test(value);
   }
 }

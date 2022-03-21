@@ -29,6 +29,7 @@ export default class RecipeService {
         }
     ];
     readonly recipeSelectedEmitter = new EventEmitter<string| undefined>();
+    readonly recipesUpdatedEmitter = new EventEmitter<Readonly<Recipe>[]>();
 
     constructor(private readonly shoppingListService: ShoppingListService) { }
     
@@ -36,15 +37,39 @@ export default class RecipeService {
         this.shoppingListService.addIngredients(items);
     }
 
+    addRecipe(data: Omit<Readonly<Recipe>, 'id'>) {
+        this.recipes.push({...data, id: uuidv4()});
+        this.recipesUpdatedEmitter.emit(this.getRecipes());
+    }
+
+    deleteRecipe(id?: string):  Readonly<Recipe> | undefined {
+        const index = (id !== undefined) ? this.recipes.findIndex((recipe) => recipe.id === id) : -1;
+        if(index === -1) {
+            return undefined;
+        }
+        const deleted = this.recipes.splice(index, 1).shift();
+        this.recipesUpdatedEmitter.emit(this.getRecipes());
+        return deleted;
+    }
+
     findRecipeById(id?: string): Readonly<Recipe> | undefined {
         return id !== undefined ?
             this.recipes.find((recipe) => recipe.id === id) : undefined;
     }
+
     getRecipes(): Readonly<Recipe>[] {
         return [...this.recipes];
     }
 
     selectRecipe(id?: string): void {
         this.recipeSelectedEmitter.emit(id);
+    }
+
+    updateRecipe(data: Readonly<Recipe>) {
+        const index = this.recipes.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
+        if (index !== -1) {
+            this.recipes[index] = {...data};
+            this.recipesUpdatedEmitter.emit(this.getRecipes());
+        }
     }
 }

@@ -1,4 +1,9 @@
-<a href="#" *ngIf="recipe !== undefined" class="list-group-item clearfix" (click)="onClickRecipe()">
+<a
+    *ngIf="recipe !== undefined"
+    [routerLink]="[recipe?.id | urlEncode]"
+    routerLinkActive="active"
+    class="list-group-item clearfix"
+    style="cursor: pointer;">
     <div class="pull-left">
         <h4 class="list-group-item-heading">{{recipe.name}}</h4>
         <p class="list-group-item-text">{{recipe.description}}</p>
