@@ -17,7 +17,7 @@ const RecipeEdit: Readonly<WithOptional<Recipe, 'id'>> = Object.freeze({
 });
 
 const createEditableRecipe = (recipe?: Readonly<Recipe>): WithOptional<Recipe, 'id'> | Recipe => {
-  return recipe !== undefined ? {...recipe} : {...RecipeEdit, ingredients: []};
+  return recipe !== undefined ? {...recipe, ingredients: [...recipe.ingredients]} : {...RecipeEdit, ingredients: []};
 };
 
 @Component({

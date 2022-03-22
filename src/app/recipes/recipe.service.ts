@@ -5,6 +5,10 @@ import ShoppingListService from '../shopping-list/shopping-list.service';
 import Ingredient from '../types/ingredient.model';
 import Recipe from '../types/recipe.model';
 
+const deepCopyRecipe = (recipe: Readonly<Recipe>): Recipe => {
+    return {...recipe, ingredients: recipe.ingredients};
+};
+
 /**
  * Provides the recipe list store and CRUD access.
  */
@@ -41,7 +45,7 @@ export default class RecipeService {
     }
 
     addRecipe(data: Omit<Readonly<Recipe>, 'id'>): Readonly<Recipe> {
-        const added = {...data, id: generateId()};
+        const added = deepCopyRecipe({...data, id: generateId()});
         this.recipes.push(added);
         this.recipesUpdatedEmitter.emit(this.getRecipes());
         return added;
@@ -73,7 +77,7 @@ export default class RecipeService {
     updateRecipe(data: Readonly<Recipe>): Readonly<Recipe> | undefined {
         const index = this.recipes.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
         if (index !== -1) {
-            const updated = {...data};
+            const updated = deepCopyRecipe(data);
             this.recipes[index] = updated;
             this.recipesUpdatedEmitter.emit(this.getRecipes());
             return updated;
