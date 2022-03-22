@@ -1,4 +1,5 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 import { v4 as generateId } from 'uuid';
 import { isNil, isNotBlank } from '../shared/app.utilities';
 import ShoppingListService from '../shopping-list/shopping-list.service';
@@ -36,7 +37,7 @@ export default class RecipeService {
             ]
         }
     ];
-    readonly recipesUpdatedEmitter = new EventEmitter<Readonly<Recipe>[]>();
+    private readonly recipesUpdatedSubject = new Subject<Readonly<Recipe>[]>();
 
     constructor(private readonly shoppingListService: ShoppingListService) { }
     
@@ -47,7 +48,7 @@ export default class RecipeService {
     addRecipe(data: Omit<Readonly<Recipe>, 'id'>): Readonly<Recipe> {
         const added = deepCopyRecipe({...data, id: generateId()});
         this.recipes.push(added);
-        this.recipesUpdatedEmitter.emit(this.getRecipes());
+        this.recipesUpdatedSubject.next(this.getRecipes());
         return added;
     }
 
@@ -57,7 +58,7 @@ export default class RecipeService {
             return undefined;
         }
         const deleted = this.recipes.splice(index, 1).shift();
-        this.recipesUpdatedEmitter.emit(this.getRecipes());
+        this.recipesUpdatedSubject.next(this.getRecipes());
         return deleted;
     }
 
@@ -74,12 +75,16 @@ export default class RecipeService {
       return !isNil(recipe) && (isNotBlank(recipe.name) && isNotBlank(recipe.description) && isNotBlank(recipe.imagePath));
     }
 
+    subscribeRecipesChanged(observer: (value: Readonly<Recipe>[]) => void): Subscription {
+       return this.recipesUpdatedSubject.subscribe(observer);
+    }
+
     updateRecipe(data: Readonly<Recipe>): Readonly<Recipe> | undefined {
         const index = this.recipes.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
         if (index !== -1) {
             const updated = deepCopyRecipe(data);
             this.recipes[index] = updated;
-            this.recipesUpdatedEmitter.emit(this.getRecipes());
+            this.recipesUpdatedSubject.next(this.getRecipes());
             return updated;
         }
         return undefined;
