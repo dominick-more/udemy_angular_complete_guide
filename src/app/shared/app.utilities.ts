@@ -1,4 +1,11 @@
-import { WithId } from '../types/type-script';
+import { v4 as generateId } from 'uuid';
+import { WithId, WithOptional } from '../types/type-script';
+
+export type Nillable<T> = T | undefined | null;
+
+export const isFunction = (value: unknown): value is Function => {
+    return typeof value === 'function';
+}
 
 export const isNil = (value: unknown): value is undefined | null => {
     return value === undefined || value === null;
@@ -23,3 +30,19 @@ export const hasOwnProperty = <T, K extends PropertyKey>(obj: T, prop: K): obj i
 export const isTypeWithId = (value: unknown): value is WithId => {
     return isPlainObject(value) && hasOwnProperty(value, 'id') && typeof value.id === 'string';
 }
+
+export const getDefaultIfNil = <T>(value: Nillable<T>, def: T | (() => T)): T => {
+    if (!isNil(value)) {
+        return value;
+    }
+    return isFunction(def) ? def() : def;
+}
+
+export const mapRequiredWithId = <T extends WithId>(value: WithOptional<T, 'id'>): T => {
+    if(!isNil(value.id)) {
+        // @ts-ignore
+        return value;
+    }
+    // @ts-ignore
+    return {...value, 'id': generateId()};
+};

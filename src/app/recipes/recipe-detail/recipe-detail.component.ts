@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import ShoppingListService from 'src/app/shopping-list/shopping-list.service';
 import Recipe from 'src/app/types/recipe.model';
 import { RecipeDataKey } from '../recipe-resolver.service';
 import RecipeService from '../recipe.service';
@@ -16,10 +17,15 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   public recipe: Recipe | undefined;
 
   constructor(private readonly recipeService: RecipeService,
+    private readonly shoppingListService: ShoppingListService,
     private readonly route: ActivatedRoute,
     private readonly router: Router) { }
 
-  ngOnInit(): void {
+  /**
+   * Subscribes to RecipeResolver recipes 'updated' event.
+   * @see {@link RecipeResolver} for data source.
+   */
+   ngOnInit(): void {
     this.routeDataSubscription = this.route.data.subscribe((data: Data) => {
       this.recipe = data[RecipeDataKey];
     });
@@ -33,11 +39,12 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
     if (!this.recipe) {
       return;
     }
-    this.recipeService.addIngredients(this.recipe.ingredients);
+    this.shoppingListService.addIngredients(this.recipe.ingredients);
   }
 
   onDeleteRecipe() {
     this.recipeService.deleteRecipe(this.recipe?.id);
+    this.router.navigate(['..'], {relativeTo: this.route});
   }
 
   onEditRecipe() {

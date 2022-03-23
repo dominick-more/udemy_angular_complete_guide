@@ -11,6 +11,7 @@ import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
 import RecipeService from './recipes/recipe.service';
 import ShoppingListService from './shopping-list/shopping-list.service';
 import CanDeactivateGuard from './shared/guards/can-deactivate.guard';
+import IngredientResolver, { IngredientDataKey } from './shopping-list/ingredient-resolver.service';
 
 
 const appRoutes: Routes = [
@@ -34,16 +35,25 @@ const appRoutes: Routes = [
       {
         path: ':id/edit',
         component: RecipeEditComponent,
-        resolve: {[RecipeDataKey]: RecipeResolver},
+        // resolve: {[RecipeDataKey]: RecipeResolver},
         canDeactivate: [CanDeactivateGuard]
       }]
   },
   {
     path: 'shopping-list', component: ShoppingListComponent,
-    children: [{
-      path: ':id', component: ShoppingEditComponent,
-      canDeactivate: [CanDeactivateGuard]
-    }]
+    children: [
+      {
+        path: '',
+        component: ShoppingEditComponent,
+        canDeactivate: [CanDeactivateGuard]
+      },
+      {
+        path: ':id',
+        component: ShoppingEditComponent,
+        resolve: {[IngredientDataKey]: IngredientResolver},
+        canDeactivate: [CanDeactivateGuard]
+      }
+    ]
   }
 ];
 
@@ -52,9 +62,9 @@ const appRoutes: Routes = [
     UrlEncodePipe
   ],
   imports: [
-    RouterModule.forRoot(appRoutes, {enableTracing: true})
+    RouterModule.forRoot(appRoutes, {enableTracing: false})
   ],
-  providers: [CanDeactivateGuard, RecipeResolver, RecipeService, ShoppingListService],
+  providers: [CanDeactivateGuard, IngredientResolver, RecipeResolver, RecipeService, ShoppingListService],
   exports: [RouterModule, UrlEncodePipe]
 })
 export class AppRoutingModule { }

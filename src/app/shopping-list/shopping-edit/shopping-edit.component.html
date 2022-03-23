@@ -1,18 +1,22 @@
 <div class="row">
     <div class="col-xs-12">
-        <form>
+        <form #shopForm="ngForm" (ngSubmit)="onSave()">
             <div class="row">
-                <div class="col-sm-5 form-group">
+                <div class="col-sm-6 form-group">
                     <label for="name">Name</label>
                     <input
                         type="text"
                         id="name"
                         name="name"
                         class="form-control"
-                        required
-                        [(ngModel)]="name"/>
+                        #name="ngModel"
+                        [(ngModel)]="ingredient.name"
+                        required/>
+                        <span class="help-block" *ngIf="name.touched && !name.valid">
+                            Please enter a name.
+                        </span>
                 </div>
-                <div class="col-sm-2 form-group">
+                <div class="col-sm-6 form-group">
                     <label for="amount">Amount</label>
                     <input
                         type="number"
@@ -20,21 +24,35 @@
                         name="amount"
                         class="form-control"
                         min="1"
-                        required
-                        [(ngModel)]="amount">
+                        #amount="ngModel"
+                        [(ngModel)]="ingredient.amount"
+                        required>
+                        <span class="help-block" *ngIf="amount.touched && !amount.valid">
+                            Please enter a positive amount.
+                        </span>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
                     <button
-                        class="btn btn-success"
                         type="submit"
-                        [disabled]="canDeactivate()"
-                        (click)="onAddItem()">
-                        Add
+                        class="btn btn-success"
+                        [disabled]="!shopForm.touched || !shopForm.valid">
+                        {{isNew() ? 'Add' : 'Update'}}
                     </button>
-                    <button class="btn btn-danger" type="button">Delete</button>
-                    <button class="btn btn-primary" type="button">Clear</button>
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        *ngIf="!isNew()"
+                        (click)="onDelete()">
+                        Delete
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="onClear()">
+                        Clear
+                    </button>
                 </div>
             </div>
         </form>

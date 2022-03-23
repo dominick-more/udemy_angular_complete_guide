@@ -1,32 +1,79 @@
-import { Component, OnInit } from '@angular/core';
-import { isNotBlank } from 'src/app/shared/app.utilities';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Data, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { isTypeWithId } from 'src/app/shared/app.utilities';
 import CanDeactivateCheck from 'src/app/types/can-deactivate-check';
-import ShoppingListService from '../shopping-list.service';
+import Ingredient from 'src/app/types/ingredient.model';
+import { WithOptional } from 'src/app/types/type-script';
+import { IngredientDataKey } from '../ingredient-resolver.service';
+import ShoppingListService, { createEditableIngredient } from '../shopping-list.service';
 
 @Component({
   selector: 'app-shopping-edit',
   templateUrl: './shopping-edit.component.html',
   styleUrls: ['./shopping-edit.component.css']
 })
-export class ShoppingEditComponent implements OnInit, CanDeactivateCheck {
+export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCheck {
+  @ViewChild('shopForm') private shopForm: NgForm;
+  private routeDataSubscription: Subscription | undefined;
+  public ingredient: WithOptional<Ingredient, 'id'> = createEditableIngredient();
+  
+  constructor(private readonly ingredientsService: ShoppingListService,
+    private readonly route: ActivatedRoute, private readonly router: Router) { }
+  
+  /**
+   * Subscribes to RecipeResolver recipes 'updated' event.
+   * @see {@link RecipeResolver} for data source.
+   */
+   ngOnInit(): void {
+    this.routeDataSubscription = this.route.data.subscribe((data: Data) => {
+      this.ingredient = createEditableIngredient(data[IngredientDataKey]);
+    });
+  }
 
-  amount: number = 1;
-  name: string = '';
-  
-  constructor(private readonly ingredientsService: ShoppingListService) { }
-  
-  ngOnInit(): void {}
+  ngOnDestroy(): void {
+    this.routeDataSubscription?.unsubscribe();
+  }
   
   canDeactivate(): boolean {
-    return this.isValid();
+    return this.isNew() || this.isValid();
   }
   
-  isValid(): boolean {
-    return (isNotBlank(this.name) && this.amount > 0);
+  isNew(): boolean {
+    return this.ingredient.id === undefined;
   }
 
-  onAddItem(): void {
-    this.ingredientsService.addIngredient({name: this.name, amount: this.amount});
+  isValid(): boolean {
+    return !this.shopForm.touched || !!this.shopForm.valid;
+  }
+
+  onClear(): void {
+    if (isTypeWithId(this.ingredient)) {
+      this.router.navigate(['..'], {relativeTo: this.route});
+    } else {
+      this.ingredient = createEditableIngredient();
+      this.shopForm.reset(this.ingredient);
+    }
+  }
+
+  onDelete(): void {
+    if (isTypeWithId(this.ingredient)) {
+      this.ingredientsService.deleteIngredient(this.ingredient.id);
+      this.router.navigate(['..'], {relativeTo: this.route});
+    }
+    
+  }
+
+  onSave(): void {
+    if (isTypeWithId(this.ingredient)) {
+      this.ingredientsService.updateIngredient(this.ingredient);
+      this.router.navigate(['/shopping-list']);
+    } else {
+      this.ingredientsService.addIngredient(this.ingredient);
+      this.ingredient = createEditableIngredient();
+      this.shopForm.reset(this.ingredient);
+    }
   }
 
   convertStringToNumber(value: string): number {
