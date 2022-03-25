@@ -8,8 +8,6 @@ import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.com
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import RecipeResolver, { RecipeDataKey } from './recipes/recipe-resolver.service';
 import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
-import RecipeService from './recipes/recipe.service';
-import ShoppingListService from './shopping-list/shopping-list.service';
 import CanDeactivateGuard from './shared/guards/can-deactivate.guard';
 import IngredientResolver, { IngredientDataKey } from './shopping-list/ingredient-resolver.service';
 
@@ -64,7 +62,7 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(appRoutes, {enableTracing: false})
   ],
-  providers: [CanDeactivateGuard, IngredientResolver, RecipeResolver, RecipeService, ShoppingListService],
+  providers: [CanDeactivateGuard, IngredientResolver, RecipeResolver],
   exports: [RouterModule, UrlEncodePipe]
 })
 export class AppRoutingModule { }

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './header/header.component';
@@ -14,6 +15,9 @@ import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-ed
 import { ToggleClassClickDirectiveDirective } from './shared/directives/toggle-class-click-directive.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
+import RecipeService from './recipes/recipe.service';
+import ShoppingListService from './shopping-list/shopping-list.service';
+import DataStorageService from './shared/storage/data-storage.service';
 
 @NgModule({
   declarations: [
@@ -33,9 +37,13 @@ import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
+    HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    DataStorageService,
+    RecipeService,
+    ShoppingListService],
   exports: [UrlEncodePipe],
   bootstrap: [AppComponent]
 })

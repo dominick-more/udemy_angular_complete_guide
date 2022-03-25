@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { v4 as generateId } from 'uuid';
+import { Observable, Subject, Subscription, tap } from 'rxjs';
 import { isNil, isNotBlank, mapRequiredWithId } from '../shared/app.utilities';
+import DataStorageService from '../shared/storage/data-storage.service';
 import Ingredient from '../types/ingredient.model';
 import Recipe from '../types/recipe.model';
 import { WithOptional, WithRequired } from '../types/type-script';
@@ -27,72 +27,70 @@ export const createEditableRecipe = (recipe?: Readonly<Recipe>): WithOptional<Re
  */
 @Injectable()
 export default class RecipeService {
-    private readonly recipes: Readonly<Recipe>[] = [
-        {
-            id: generateId(),
-            name: 'Tasty Schnitzel',
-            description: 'A super-tasty Schnitzel - just awesome?',
-            imagePath: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Schnitzel.JPG/640px-Schnitzel.JPG',
-            ingredients: [
-                {id: generateId(), name: 'Meat', amount: 1},
-                {id: generateId(), name: 'French Fried', amount: 20}
-            ]
-        },
-        {
-            id: generateId(),
-            name: 'Big Fat Burger',
-            description: 'What else you need to say?',
-            imagePath: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg/640px-Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg',
-            ingredients: [
-                {id: generateId(), name: 'Meat', amount: 1},
-                {id: generateId(), name: 'Buns', amount: 2}
-            ]
-        }
-    ];
-    private readonly recipesUpdatedSubject = new Subject<Readonly<Recipe>[]>();
+    private readonly items: Readonly<Recipe>[] = [];
+    private readonly collectionName = 'recipes';
+    private readonly itemsUpdatedSubject = new Subject<Readonly<Recipe>[]>();
 
-    constructor() { }
+    constructor(private readonly dataStorage: DataStorageService) { }
     
-    addRecipe(data: Readonly<WithOptional<Omit<Recipe, 'id'>, 'ingredients'>>): Readonly<Recipe> {
+    addItem(data: Readonly<WithOptional<Omit<Recipe, 'id'>, 'ingredients'>>): Readonly<Recipe> {
         const added = deepCopyRecipe(mapRequiredWithId<Recipe>({ingredients: [], ...data}));
-        this.recipes.push(added);
-        this.recipesUpdatedSubject.next(this.getRecipes());
+        this.items.push(added);
+        this.itemsUpdatedSubject.next(this.getItems());
         return added;
     }
 
-    deleteRecipe(id?: string):  Readonly<Recipe> | undefined {
-        const index = (id !== undefined) ? this.recipes.findIndex((recipe) => recipe.id === id) : -1;
+    deleteItem(id?: string):  Readonly<Recipe> | undefined {
+        const index = (id !== undefined) ? this.items.findIndex((recipe) => recipe.id === id) : -1;
         if(index === -1) {
             return undefined;
         }
-        const deleted = this.recipes.splice(index, 1).shift();
-        this.recipesUpdatedSubject.next(this.getRecipes());
+        const deleted = this.items.splice(index, 1).shift();
+        this.itemsUpdatedSubject.next(this.getItems());
         return deleted;
     }
 
-    findRecipeById(id?: string): Readonly<Recipe> | undefined {
+    fetchItems(): Observable<Recipe[]> {
+        return this.dataStorage.fetch<Recipe>(this.collectionName).pipe(
+            tap((data) => {
+                this.items.splice(0, this.items.length, ...data);
+                this.itemsUpdatedSubject.next(this.getItems());
+            })
+        );
+    }
+
+    findItemById(id?: string): Readonly<Recipe> | undefined {
         return id !== undefined ?
-            this.recipes.find((recipe) => recipe.id === id) : undefined;
+            this.items.find((recipe) => recipe.id === id) : undefined;
     }
 
-    getRecipes(): Readonly<Recipe>[] {
-        return [...this.recipes];
+    getItems(): Readonly<Recipe>[] {
+        return [...this.items];
     }
 
-    isValidRecipe(recipe?: Readonly<Omit<Recipe, 'id'>>): boolean {
+    isValidItem(recipe?: Readonly<Omit<Recipe, 'id'>>): boolean {
       return !isNil(recipe) && (isNotBlank(recipe.name) && isNotBlank(recipe.description) && isNotBlank(recipe.imagePath));
     }
 
-    subscribeRecipesChanged(observer: (value: Readonly<Recipe>[]) => void): Subscription {
-       return this.recipesUpdatedSubject.subscribe(observer);
+    subscribeItemsChanged(next: (value: Readonly<Recipe>[]) => void): Subscription {
+       return this.itemsUpdatedSubject.subscribe(next);
     }
 
-    updateRecipe(data: Readonly<WithRequired<Partial<Recipe>, 'id'>>): Readonly<Recipe> | undefined {
-        const index = this.recipes.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
+    storeItems(): Observable<Recipe[]> {
+        return this.dataStorage.store(this.collectionName, this.getItems()).pipe(
+            tap((data) => {
+                this.items.splice(0, this.items.length, ...data);
+                this.itemsUpdatedSubject.next(this.getItems());
+            })
+        );
+    }
+
+    updateItem(data: Readonly<WithRequired<Partial<Recipe>, 'id'>>): Readonly<Recipe> | undefined {
+        const index = this.items.findIndex((recipe: Readonly<Recipe>) => recipe.id === data.id);
         if (index !== -1) {
-            const updated = deepCopyRecipe({...this.recipes[index], ...data});
-            this.recipes[index] = updated;
-            this.recipesUpdatedSubject.next(this.getRecipes());
+            const updated = deepCopyRecipe({...this.items[index], ...data});
+            this.items[index] = updated;
+            this.itemsUpdatedSubject.next(this.getItems());
             return updated;
         }
         return undefined;

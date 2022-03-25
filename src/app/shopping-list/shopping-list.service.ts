@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { v4 as generateId } from 'uuid';
+import { mapRequiredWithId } from '../shared/app.utilities';
 import Ingredient from '../types/ingredient.model';
 import { WithOptional } from '../types/type-script';
 
@@ -19,69 +19,58 @@ export const createEditableIngredient = (ingredient?: Readonly<Ingredient>): Wit
 
 @Injectable()
 export default class ShoppingListService {
-  private readonly ingredientsChangedSubject = new Subject<Readonly<Ingredient>[]>();
-  private readonly ingredients: Readonly<Ingredient>[] = [
-      {
-        id: generateId(),
-        name: 'Apples',
-        amount: 5
-      },
-      {
-        id: generateId(),
-        name: 'Tomatoes',
-        amount: 10
-      }
-  ];
+  private readonly itemsChangedSubject = new Subject<Readonly<Ingredient>[]>();
+  private readonly items: Readonly<Ingredient>[] = [];
 
-  addIngredient(item: Readonly<Omit<Ingredient, 'id'>>): Readonly<Ingredient> {
-    const added = deepCopyIngredient({...item, id: generateId()});
-    this.ingredients.push(added);
-    this.ingredientsChangedSubject.next(this.getIngredients());
+  addItem(item: Readonly<Omit<Ingredient, 'id'>>): Readonly<Ingredient> {
+    const added = deepCopyIngredient(mapRequiredWithId(item));
+    this.items.push(added);
+    this.itemsChangedSubject.next(this.getItems());
     return added;
   }
 
-  addIngredients(items: Readonly<Omit<Ingredient, 'id'>>[]): Readonly<Ingredient>[] {
+  addItems(items: Readonly<Omit<Ingredient, 'id'>>[]): Readonly<Ingredient>[] {
     if (!items.length) {
       return [];
     }
-    const added = items.map((item) => deepCopyIngredient({...item, id: generateId()}));
-    this.ingredients.push(...added);
-    this.ingredientsChangedSubject.next(this.getIngredients());
+    const added = items.map((item) => deepCopyIngredient(mapRequiredWithId(item)));
+    this.items.push(...added);
+    this.itemsChangedSubject.next(this.getItems());
     return added;
   }
 
-  deleteIngredient(id?: string):  Readonly<Ingredient> | undefined {
-    const index = (id !== undefined) ? this.ingredients.findIndex(
+  deleteItem(id?: string):  Readonly<Ingredient> | undefined {
+    const index = (id !== undefined) ? this.items.findIndex(
       (ingredient) => ingredient.id === id) : -1;
     if(index === -1) {
         return undefined;
     }
-    const deleted = this.ingredients.splice(index, 1).shift();
-    this.ingredientsChangedSubject.next(this.getIngredients());
+    const deleted = this.items.splice(index, 1).shift();
+    this.itemsChangedSubject.next(this.getItems());
     return deleted;
 }
 
-  findIngredientById(id?: string): Readonly<Ingredient> | undefined {
+  findItemById(id?: string): Readonly<Ingredient> | undefined {
     return id !== undefined ?
-        this.ingredients.find((ingredient) => ingredient.id === id) : undefined;
+        this.items.find((ingredient) => ingredient.id === id) : undefined;
   }
 
-  getIngredients(): Readonly<Ingredient>[] {
-    return [...this.ingredients];
+  getItems(): Readonly<Ingredient>[] {
+    return [...this.items];
   }
 
-  updateIngredient(data: Readonly<Ingredient>): Readonly<Ingredient> | undefined {
-    const index = this.ingredients.findIndex((ingredient: Readonly<Ingredient>) => ingredient.id === data.id);
+  updateItem(item: Readonly<Ingredient>): Readonly<Ingredient> | undefined {
+    const index = this.items.findIndex((ingredient: Readonly<Ingredient>) => ingredient.id === item.id);
     if (index !== -1) {
-        const updated = deepCopyIngredient(data);
-        this.ingredients[index] = updated;
-        this.ingredientsChangedSubject.next(this.getIngredients());
+        const updated = deepCopyIngredient(item);
+        this.items[index] = updated;
+        this.itemsChangedSubject.next(this.getItems());
         return updated;
     }
     return undefined;
   }
 
-  subscribeIngredientsChanged(observer: (value: Readonly<Ingredient>[]) => void): Subscription {
-    return this.ingredientsChangedSubject.subscribe(observer);
+  subscribeItemsChanged(next: (value: Readonly<Ingredient>[]) => void): Subscription {
+    return this.itemsChangedSubject.subscribe(next);
   }
 }

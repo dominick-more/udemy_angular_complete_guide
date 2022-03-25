@@ -38,7 +38,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
   }
 
   ngOnInit(): void {
-    const recipe = createEditableRecipe(this.recipeService.findRecipeById(this.route.params['id']));
+    const recipe = createEditableRecipe(this.recipeService.findItemById(this.route.params['id']));
     this.id = recipe.id;
     this.recipeForm = new FormGroup({
       'name': new FormControl(recipe.name, Validators.required),
@@ -47,7 +47,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
       'ingredients': new FormArray(this.mapIngredientsToFormGroups(recipe.ingredients))
     }); 
     this.routeParamsSubscription = this.route.params.subscribe((params: Params) => {
-      const recipe = createEditableRecipe(this.recipeService.findRecipeById(params['id']));
+      const recipe = createEditableRecipe(this.recipeService.findItemById(params['id']));
       this.id = recipe.id;
       this.recipeForm.patchValue({
         'name': recipe.name,
@@ -109,9 +109,9 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
     };
 
     if (isTypeWithId(recipe)) {
-      this.recipeService.updateRecipe(recipe);
+      this.recipeService.updateItem(recipe);
     } else {
-      this.recipeService.addRecipe(recipe);
+      this.recipeService.addItem(recipe);
     }
     this.router.navigate([...NavigatePath], {relativeTo: this.route});
   }

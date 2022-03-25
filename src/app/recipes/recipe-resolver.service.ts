@@ -15,6 +15,6 @@ export default class RecipeResolver implements Resolve<Readonly<Recipe> | undefi
   constructor(private readonly recipeService: RecipeService) { }
 
   resolve(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Readonly<Recipe> | undefined {
-    return this.recipeService.findRecipeById(route.params['id']);
+    return this.recipeService.findItemById(route.params['id']);
   }
 }

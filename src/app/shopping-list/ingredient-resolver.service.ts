@@ -11,7 +11,7 @@ export default class IngredientResolver implements Resolve<Readonly<Ingredient>|
     constructor(private readonly shoppingListService: ShoppingListService) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Readonly<Ingredient> | undefined {
-        return this.shoppingListService.findIngredientById(route.params['id']);
+        return this.shoppingListService.findItemById(route.params['id']);
     }
 
 }

@@ -27,7 +27,7 @@ export const hasOwnProperty = <T, K extends PropertyKey>(obj: T, prop: K): obj i
     return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-export const isTypeWithId = (value: unknown): value is WithId => {
+export const isTypeWithId = <T extends WithId>(value: unknown): value is T => {
     return isPlainObject(value) && hasOwnProperty(value, 'id') && typeof value.id === 'string';
 }
 
@@ -39,9 +39,8 @@ export const getDefaultIfNil = <T>(value: Nillable<T>, def: T | (() => T)): T =>
 }
 
 export const mapRequiredWithId = <T extends WithId>(value: WithOptional<T, 'id'>): T => {
-    if(!isNil(value.id)) {
-        // @ts-ignore
-        return value;
+    if(isTypeWithId<T>(value)) {
+         return value;
     }
     // @ts-ignore
     return {...value, 'id': generateId()};

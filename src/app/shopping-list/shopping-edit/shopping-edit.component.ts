@@ -19,7 +19,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCh
   private routeDataSubscription: Subscription | undefined;
   public ingredient: WithOptional<Ingredient, 'id'> = createEditableIngredient();
   
-  constructor(private readonly ingredientsService: ShoppingListService,
+  constructor(private readonly shoppingListService: ShoppingListService,
     private readonly route: ActivatedRoute, private readonly router: Router) { }
   
   /**
@@ -59,7 +59,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCh
 
   onDelete(): void {
     if (isTypeWithId(this.ingredient)) {
-      this.ingredientsService.deleteIngredient(this.ingredient.id);
+      this.shoppingListService.deleteItem(this.ingredient.id);
       this.router.navigate(['..'], {relativeTo: this.route});
     }
     
@@ -67,10 +67,10 @@ export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCh
 
   onSave(): void {
     if (isTypeWithId(this.ingredient)) {
-      this.ingredientsService.updateIngredient(this.ingredient);
+      this.shoppingListService.updateItem(this.ingredient);
       this.router.navigate(['/shopping-list']);
     } else {
-      this.ingredientsService.addIngredient(this.ingredient);
+      this.shoppingListService.addItem(this.ingredient);
       this.ingredient = createEditableIngredient();
       this.shopForm.reset(this.ingredient);
     }
