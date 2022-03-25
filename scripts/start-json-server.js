@@ -1,9 +1,16 @@
 const fs = require('fs');
+const bcryptjs = require('bcryptjs');
 const jsonServer = require('json-server');
+const jsonServerAuth = require('json-server-auth');
+const { SALT_LENGTH } = require('json-server-auth/dist/constants');
 var cors = require('cors');
 
 const port = 3000;
 const testDbFilePath = './test-db.json';
+
+const hashPassword = (password) => {
+  return bcryptjs.hashSync(password, SALT_LENGTH);
+};
 
 const data = {
   "recipes": {
@@ -39,22 +46,44 @@ const data = {
         }
       ]
     }
-  }
+  },
+  "users": [
+    {
+      "email": "test@test.com",
+      "password": hashPassword('password'),
+      "id": 1
+    }
+  ]
 };
 
 fs.writeFileSync(testDbFilePath, JSON.stringify(data));
 console.log('Created test db file: ' + testDbFilePath);
 
-const server = jsonServer.create();
+// @see {@link https://www.npmjs.com/package/json-server}
+const app = jsonServer.create();
 const router = jsonServer.router(testDbFilePath, {foreignKeySuffix: 'id' });
+
+// Bind the router db to the app for jsonServerAuth
+app.db = router.db;
+
 const middlewares = jsonServer.defaults();
 
-server.use(jsonServer.bodyParser);
-server.use(middlewares);
-server.use(cors());
+const rules = jsonServerAuth.rewriter({
+  // Permission rules protect 'ng-course-recipe-book' r/w
+  // @see {@link https://www.npmjs.com/package/json-server-auth}
+  'ng-course-recipe-book': 660
+})
 
-server.use('/ng-course-recipe-book', router);
+// Apply route protection rules
+app.use(rules);
 
-server.listen(port, () => {
+// Enable cors since server is running on a different port
+app.use(cors());
+
+app.use(middlewares);
+app.use(jsonServerAuth);
+app.use('/ng-course-recipe-book', router);
+
+app.listen(port, () => {
   console.log('JSON Server is running on port: ' + port);
 });

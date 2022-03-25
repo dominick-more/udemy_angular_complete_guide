@@ -3,7 +3,7 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
 @Directive({
   selector: '[appToggleClassClickDirective]'
 })
-export class ToggleClassClickDirectiveDirective {
+export class ToggleClassClickDirective {
 
   private applyClass: boolean = false;
   @Input('appToggleClassClickDirective') toggleClickClass: string = '';

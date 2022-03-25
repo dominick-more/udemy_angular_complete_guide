@@ -12,12 +12,14 @@ import { RecipeItemComponent } from './recipes/recipe-list/recipe-item/recipe-it
 import { RecipeListComponent } from './recipes/recipe-list/recipe-list.component';
 import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
-import { ToggleClassClickDirectiveDirective } from './shared/directives/toggle-class-click-directive.directive';
+import { ToggleClassClickDirective } from './shared/directives/toggle-class-click.directive';
 import { AppRoutingModule } from './app-routing.module';
 import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
 import RecipeService from './recipes/recipe.service';
 import ShoppingListService from './shopping-list/shopping-list.service';
 import DataStorageService from './shared/storage/data-storage.service';
+import { AuthComponent } from './auth/auth.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import DataStorageService from './shared/storage/data-storage.service';
     RecipesStartComponent,
     ShoppingListComponent,
     ShoppingEditComponent,
-    ToggleClassClickDirectiveDirective
+    ToggleClassClickDirective,
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,

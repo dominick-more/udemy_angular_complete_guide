@@ -1,0 +1,1 @@
+export const ServerRootUrl: string = 'http://localhost:3000/';

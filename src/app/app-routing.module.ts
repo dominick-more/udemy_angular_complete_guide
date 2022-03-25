@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthComponent } from './auth/auth.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
@@ -10,12 +11,21 @@ import RecipeResolver, { RecipeDataKey } from './recipes/recipe-resolver.service
 import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
 import CanDeactivateGuard from './shared/guards/can-deactivate.guard';
 import IngredientResolver, { IngredientDataKey } from './shopping-list/ingredient-resolver.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth.interceptor';
+import AuthGuard from './auth/auth.guard';
 
 
 const appRoutes: Routes = [
-  {path: '', redirectTo: '/recipes', pathMatch: 'full' },
+  {
+    path: '', redirectTo: '/recipes', pathMatch: 'full'
+  },
+  {
+    path: 'auth', component: AuthComponent
+  },
   {
     path: 'recipes', component: RecipesComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -62,7 +72,17 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(appRoutes, {enableTracing: false})
   ],
-  providers: [CanDeactivateGuard, IngredientResolver, RecipeResolver],
+  providers: [
+    AuthGuard,
+    CanDeactivateGuard,
+    IngredientResolver,
+    RecipeResolver,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   exports: [RouterModule, UrlEncodePipe]
 })
 export class AppRoutingModule { }
