@@ -20,6 +20,8 @@ import ShoppingListService from './shopping-list/shopping-list.service';
 import DataStorageService from './shared/storage/data-storage.service';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import { AlertComponent } from './shared/alert/alert.component';
+import { PlaceholderDirective } from './shared/directives/placeholder.directive';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
     ShoppingEditComponent,
     ToggleClassClickDirective,
     AuthComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    AlertComponent,
+    PlaceholderDirective
   ],
   imports: [
     BrowserModule,

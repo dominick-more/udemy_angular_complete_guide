@@ -14,7 +14,13 @@ const errorSelector = (err: any): Observable<never> => {
   let errorMessage: string;
   switch(true) {
     case err instanceof HttpErrorResponse:
-      errorMessage = err.error;
+      if (isString(err.error)) {
+        errorMessage = err.error;
+      } else if (isString(err.message)) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = 'An unknown error occurred!';
+      }
       break;
     case err instanceof Error:
       errorMessage = err.message;
@@ -23,7 +29,7 @@ const errorSelector = (err: any): Observable<never> => {
       errorMessage = err;
       break;
     default:
-      errorMessage = 'An unknown error occurred!'
+      errorMessage = 'An unknown error occurred!';
   };
   return throwError(() => new Error(errorMessage));
 };
