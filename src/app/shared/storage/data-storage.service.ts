@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { AuthService } from 'src/app/auth/auth.service';
 import { WithId } from 'src/app/types/type-script';
 import { ServerRootUrl } from '../constants';
 
@@ -21,7 +20,7 @@ export default class DataStorageService {
 
     private readonly ContextPath = `${ServerRootUrl}ng-course-recipe-book`;
 
-    constructor(private readonly client: HttpClient, private authService: AuthService) {}
+    constructor(private readonly client: HttpClient) {}
 
     buildUrl(relativePath: string): string {
         return `${this.ContextPath}/${relativePath}`

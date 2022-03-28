@@ -1,1 +1,3 @@
-export const ServerRootUrl: string = 'http://localhost:3000/';
+import { environment } from '../../environments/environment';
+
+export const ServerRootUrl: string = `${environment.dataStorageRootUrl}`;
