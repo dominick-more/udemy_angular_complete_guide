@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit, OnDestroy {
+export class AuthComponent implements OnDestroy {
   @ViewChild('authForm') private authForm: NgForm | undefined;
   @ViewChild(PlaceholderDirective) private alertHost: PlaceholderDirective | undefined;
   private alertCloseSubscription: Subscription | undefined;
@@ -24,9 +24,6 @@ export class AuthComponent implements OnInit, OnDestroy {
   constructor(private readonly authService: AuthService,
     private readonly router: Router) { }
   
-  ngOnInit(): void {
-  }
-
   ngOnDestroy(): void {
     if (this.alertCloseSubscription) {
       this.alertCloseSubscription.unsubscribe();

@@ -95,9 +95,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "udemy-angular-01"
+  "defaultProject": "udemy-angular-01",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
