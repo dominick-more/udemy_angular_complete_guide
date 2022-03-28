@@ -45,3 +45,13 @@ export const mapRequiredWithId = <T extends WithId>(value: WithOptional<T, 'id'>
     // @ts-ignore
     return {...value, 'id': generateId()};
 };
+
+export const convertToString = (value: unknown): string | undefined => {
+    if (isNil(value)) {
+        return undefined;
+    }
+    if (isString(value)) {
+        return value;
+    }
+    return String(value);
+}

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { isTypeWithId } from 'src/app/shared/app.utilities';
+import { isNil, isTypeWithId } from 'src/app/shared/app.utilities';
 import CanDeactivateCheck from 'src/app/types/can-deactivate-check';
 import Ingredient from 'src/app/types/ingredient.model';
 import { WithOptional } from 'src/app/types/type-script';
@@ -15,7 +15,7 @@ import ShoppingListService, { createEditableIngredient } from '../shopping-list.
   styleUrls: ['./shopping-edit.component.css']
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCheck {
-  @ViewChild('shopForm') private shopForm: NgForm;
+  @ViewChild('shopForm') private shopForm: NgForm | undefined;
   private routeDataSubscription: Subscription | undefined;
   public ingredient: WithOptional<Ingredient, 'id'> = createEditableIngredient();
   
@@ -45,15 +45,17 @@ export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCh
   }
 
   isValid(): boolean {
-    return !this.shopForm.touched || !!this.shopForm.valid;
+    return !isNil(this.shopForm) && (!this.shopForm.touched || !!this.shopForm.valid);
   }
 
   onClear(): void {
     if (isTypeWithId(this.ingredient)) {
       this.router.navigate(['..'], {relativeTo: this.route});
     } else {
-      this.ingredient = createEditableIngredient();
-      this.shopForm.reset(this.ingredient);
+      if (!isNil(this.shopForm)) {
+        this.ingredient = createEditableIngredient();
+        this.shopForm.reset(this.ingredient);
+      }
     }
   }
 
@@ -71,8 +73,10 @@ export class ShoppingEditComponent implements OnInit, OnDestroy, CanDeactivateCh
       this.router.navigate(['/shopping-list']);
     } else {
       this.shoppingListService.addItem(this.ingredient);
-      this.ingredient = createEditableIngredient();
-      this.shopForm.reset(this.ingredient);
+      if (!isNil(this.shopForm)) {
+        this.ingredient = createEditableIngredient();
+        this.shopForm.reset(this.ingredient);
+      }
     }
   }
 

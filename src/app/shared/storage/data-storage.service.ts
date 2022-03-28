@@ -5,10 +5,11 @@ import { WithId } from 'src/app/types/type-script';
 import { ServerRootUrl } from '../constants';
 
 const mapDataToBody = <D extends WithId>(data: D[]): Record<string, D> =>{
+    const acc: Record<string, D> = {};
     return data.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
-    }, {});
+    }, acc);
 };
 
 const mapBodyToData = <D extends WithId>(value: Record<string, D>): D[] => {

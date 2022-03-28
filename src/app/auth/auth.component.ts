@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { AlertComponent } from '../shared/alert/alert.component';
+import { isNil } from '../shared/app.utilities';
 import { PlaceholderDirective } from '../shared/directives/placeholder.directive';
 import { AuthService } from './auth.service';
 
@@ -12,8 +13,8 @@ import { AuthService } from './auth.service';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit, OnDestroy {
-  @ViewChild('authForm') private authForm: NgForm;
-  @ViewChild(PlaceholderDirective) private alertHost: PlaceholderDirective;
+  @ViewChild('authForm') private authForm: NgForm | undefined;
+  @ViewChild(PlaceholderDirective) private alertHost: PlaceholderDirective | undefined;
   private alertCloseSubscription: Subscription | undefined;
   public isLoading: boolean = false;
   public isLoginMode: boolean = true;
@@ -41,7 +42,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (!this.authForm.valid) {
+    if (!this.authForm?.valid) {
       return;
     }
     const { email, password } = this.authForm.value;
@@ -66,7 +67,10 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   showErrorAlert(message: string) {
-    const viewContainerRef = this.alertHost.viewContainerRef;
+    const viewContainerRef = this.alertHost?.viewContainerRef;
+    if (isNil(viewContainerRef)) {
+      return;
+    }
     viewContainerRef.clear();
     const alertComponentRef = viewContainerRef.createComponent(AlertComponent);
     alertComponentRef.instance.message = message;
