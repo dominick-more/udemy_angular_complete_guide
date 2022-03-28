@@ -69,7 +69,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy, CanDeactivateChec
     return this.cancel || this.isNew() || this.isValid();
   }
 
-  getIngredientControls(): AbstractControl[] {
+  get ingredientControls(): AbstractControl[] {
     const ingredientsArray = <FormArray>this.recipeForm.get('ingredients');
     return ingredientsArray.controls;
   }

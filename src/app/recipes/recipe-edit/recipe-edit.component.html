@@ -59,7 +59,7 @@
                     <div
                         class="row"
                         style="margin-bottom: 2px"
-                        *ngFor="let ingredientControl of getIngredientControls(); let controlIndex = index;"
+                        *ngFor="let ingredientControl of ingredientControls; let controlIndex = index;"
                         [formGroupName]="controlIndex">
                         <div class="col-xs-8">
                             <input
