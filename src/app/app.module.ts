@@ -25,6 +25,8 @@ import { PlaceholderDirective } from './shared/directives/placeholder.directive'
 
 @NgModule({
   declarations: [
+    PlaceholderDirective,
+    UrlEncodePipe,
     AppComponent,
     HeaderComponent,
     RecipesComponent,
@@ -38,8 +40,7 @@ import { PlaceholderDirective } from './shared/directives/placeholder.directive'
     ToggleClassClickDirective,
     AuthComponent,
     LoadingSpinnerComponent,
-    AlertComponent,
-    PlaceholderDirective
+    AlertComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +53,7 @@ import { PlaceholderDirective } from './shared/directives/placeholder.directive'
     DataStorageService,
     RecipeService,
     ShoppingListService],
-  exports: [UrlEncodePipe],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

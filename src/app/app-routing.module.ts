@@ -8,7 +8,6 @@ import { RecipesStartComponent } from './recipes/recipes-start/recipes-start.com
 import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.component';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import RecipeResolver, { RecipeDataKey } from './recipes/recipe-resolver.service';
-import { UrlEncodePipe } from './shared/pipes/url-encode.pipe';
 import CanDeactivateGuard from './shared/guards/can-deactivate.guard';
 import IngredientResolver, { IngredientDataKey } from './shopping-list/ingredient-resolver.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -66,9 +65,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    UrlEncodePipe
-  ],
+  declarations: [],
   imports: [
     RouterModule.forRoot(appRoutes, {enableTracing: false})
   ],
@@ -83,6 +80,6 @@ const appRoutes: Routes = [
       multi: true
     }
   ],
-  exports: [RouterModule, UrlEncodePipe]
+  exports: [RouterModule]
 })
 export class AppRoutingModule { }
